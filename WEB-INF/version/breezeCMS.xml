@@ -1,0 +1,10 @@
+﻿<description>
+	<ContentDir>dest/breezeCMS.zip</ContentDir>
+	<PatchDir>dest/breezeCMS_patch.zip</PatchDir>
+	<DocDir>dest/breezeCMS_doc.zip</DocDir>
+	<Type>BreezeCMS</Type>
+	<Version>3.24</Version>
+	<VersionDesc>
+		有左侧菜单树的时候，编辑列表，然后直接用左边菜单树跳转会查询不到该有的内容
+	</VersionDesc>
+</description>

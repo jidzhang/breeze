@@ -1,0 +1,10 @@
+﻿<description>
+	<ContentDir>dest/breezeTools.zip</ContentDir>
+	<PatchDir>dest/breezeTools_patch.zip</PatchDir>
+	<DocDir>dest/breezeTools_doc.zip</DocDir>
+	<Type>BreezeTools</Type>
+	<Version>1.82</Version>
+	<VersionDesc>
+	  gadget测试工具的一个bug修复，解决顶行字符没有被解析到问题，另外sequence图增加场景跳转功能
+	</versionDesc>
+<description>
