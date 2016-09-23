@@ -62,6 +62,15 @@
 * @version 0.70 2016-07-30罗光瑜修改 FireEvent的参数如果有${xx}的运算其结果有()之类的特殊字符，就会挂掉，这里show函数直接处理掉
 * @version 0.71 2016-08-17罗光瑜修改 0.70版本修改的如果{中间有()运算}匹配真正的${xxx}是不对的
 * @version 0.72 2016-08-17罗光瑜修改 调整了blockui的默认样式
+* @version 0.73 2016-08-17罗光瑜修改 show方法的FireEvent支持xxx:FireEvent.xx形式
+* @version 0.74 2016-08-17罗光瑜修改 getCaller函数中||当值为0的时候实际也是有值的，结果执行后面的了
+* @version 0.75 2016-08-17罗光瑜修改 当threadSignal存在，则最后一个重定义posturl就失效了
+* @version 0.76 2016-08-17罗光瑜修改 增加录制servicegadget的日志类函数
+* @version 0.77 2016-09-07罗光瑜修改 doServer发起请求后，支持mokeSignal参数进行模拟桩数据获取
+* @version 0.78 2016-09-07罗光瑜修改 doServer发起请求带日志，结果本地变量名写错
+* @version 0.79 2016-09-13罗光瑜修改 this.API.show 方法要做些改动，要支持aftershow的插入点，即所有show方法后，要做的一些事情，可以定义
+* @version 0.80 2016-09-13罗光瑜修改 gadget增加版本，便于缓存控制
+* @version 0.81 2016-09-16罗光瑜修改 show方法支持特效显示
 */ 
 
 /**
@@ -198,6 +207,20 @@ define(function(require, exports, module) {
 				if (execResult){
 					threadSignal = execResult[1];
 				}
+				if (threadSignal == null){
+					threadSignal = _obj.use().load("_threadSignal",true);
+				}
+				
+				
+				var mokeSignal = null;
+				var execResult = (new RegExp("mokeSignal=([\\w%\\.]+)")).exec(myurl);
+				if (execResult){
+					mokeSignal = execResult[1];
+				}
+				if (mokeSignal == null){
+					mokeSignal = _obj.use().load("_mokeSignal",true);
+				}
+				
 				var postUrl = _doserverUrl;
 				if ($postUrl){
 					postUrl = $postUrl;
@@ -206,6 +229,12 @@ define(function(require, exports, module) {
 					//2015-12-31罗光瑜修改，调试情况下也要支持跨域url
 					postUrl = postUrl + "?threadSignal="+threadSignal;
 				}
+				
+				if (mokeSignal){
+					//2015-12-31罗光瑜修改，调试情况下也要支持跨域url
+					postUrl = postUrl + "?mokeSignal="+mokeSignal;
+				}
+				
 				
 				$.post(postUrl,{data:dataStr},
 				function(__returndata){
@@ -281,8 +310,8 @@ define(function(require, exports, module) {
 		*支持外显示，即显示到__target_appid对应的外部标签中
 		*@example 
 		*this.API.show("view1",data);
-		*/		
-		result.show = _APPAPI.show || function(__viewId,__data,__target){
+		*/
+		var realShow = function(__viewId,__data,__target,method){
 			//2016-04-30罗光瑜修改
 			var tmpDom = null;
 			if (_$app.dom != null && /string/i.test(typeof(_$app.dom))){
@@ -327,7 +356,8 @@ define(function(require, exports, module) {
 						return a+b.replace(/\$%7B/ig,function(a){return "${"}).replace(/%7D/ig,"}")+c;
 					});
 			//2016-07-30 FireEvent在模板运行后在转换就处理不了FireEvent内部有变量转变出来的特殊字符，必须在转换前处理，转换后再处理一次
-			src = src.replace(/(["';])\s*FireEvent\.(\w+)\((.*?)\)\s*(['";])/ig,function(a,b,c,d,e){
+			//2016-08-29 支持xx:FireEvent.xx的形式就多了一个:
+			src = src.replace(/(["';:])\s*FireEvent\.(\w+)\((.*?)\)\s*(['";])/ig,function(a,b,c,d,e){
 			var param = d.replace(/\$\s*\{[^\}]+\}/ig,function(a){
 				return "@###!"+a+"!###@";
 			});
@@ -360,11 +390,23 @@ define(function(require, exports, module) {
 			});
 			//2014-08-07 罗光瑜修改，show方法如果是target是_那么不会被输出
 			if (__target != "_"){
-				target.html(htmlStr);
-				target.show();	
+				if (!method){
+					target.html(htmlStr);
+				    target.show();
+				}else{
+					target.hide();
+					target.html(htmlStr);
+				    target[method]();
+				}
+					
 			}
 			//2014-08-07 罗光瑜修改，show方法一定有输出
 			return htmlStr;
+		}
+		result.show = _APPAPI.show || function(__viewId,__data,__target,method){
+			var result = realShow(__viewId,__data,__target,method);
+			_APPAPI.afterShow && _APPAPI.afterShow(__viewId,__data,__target);
+			return result;
 		};
 		
 		/**
@@ -430,7 +472,8 @@ define(function(require, exports, module) {
 						return a+b.replace(/\$%7B/ig,function(a){return "${"}).replace(/%7D/ig,"}")+c;
 					});
 			//2016-07-30 FireEvent在模板运行后在转换就处理不了FireEvent内部有变量转变出来的特殊字符，必须在转换前处理，转换后再处理一次
-			src = src.replace(/([";]?)\s*FireEvent\.(\w+)\(([^\)]*)\)\s*([;"]?)/ig,function(a,b,c,d,e){
+			//2016-08-29 支持xx:FireEvent.xx的形式就多了一个:
+			src = src.replace(/(["';:]?)\s*FireEvent\.(\w+)\(([^\)]*)\)\s*([;"]?)/ig,function(a,b,c,d,e){
 			var param = d.replace(/\$\s*\{[^\}]+\}/ig,function(a){
 				return "@###!"+a+"!###@";
 			});
@@ -953,7 +996,7 @@ define(function(require, exports, module) {
 	*	}
 	*)
 	*/
-	_obj.register =  function(__c,module){
+	_obj.register =  function(__c,module,version){
 		if (!__c || !__c.name){
 			return;
 		}
@@ -961,7 +1004,11 @@ define(function(require, exports, module) {
 		//2015-10-19罗光瑜修改，增加参数module，使得gadget中可以获取自己所在路径
 		if (module){
 			_gadget[__c.name]._uri = module.uri;	
-		}		
+		}
+		//2016-09-13罗光瑜修改，增加版本控制
+		if (version){
+			_gadget[__c.name].version = version;
+		}
 	};
 	
 	/**
@@ -1010,6 +1057,33 @@ define(function(require, exports, module) {
 	*		});
 	*/	
 	_obj.go = function(__url,pageGadget,$callBack){
+		//2016-09-13罗光瑜修判断是否有内容，有的话就将gadget全部记录到本地中。
+		var myurl = window.location.toString();
+		var threadSignal = null;
+		var execResult = (new RegExp("threadSignal=([\\w%\\.]+)")).exec(myurl);
+		if (execResult){
+			threadSignal = execResult[1];
+		}
+		if (threadSignal == null){
+			threadSignal = _obj.use().load("_threadSignal",true);
+		}
+		if (threadSignal){
+			var appLogObj = _obj.use().load("_allGadgetVersion",true);
+			myurl = myurl.replace(/^http[s]?:\/\/.+?\//i,"");
+			myurl = myurl.replace(/[\?#].*$/i,""); 
+			myurl = myurl.replace(/[\\\/]+/g,"/");
+			if (appLogObj == null){
+				appLogObj = {};
+			}
+			if (!appLogObj[myurl]){
+				appLogObj[myurl] = {};
+			}
+			for (var n in _gadget){
+				appLogObj[myurl][n] = _gadget[n].version || "无";
+			}
+			_obj.use().save("_allGadgetVersion",appLogObj,true);
+		}
+		
 		//2015-01-05 罗光瑜 进行是否go初始化校验
 		if (_obj.hasGo){
 			//如果已经初始化过，则进行告警,为做一定的兼容性处理，这里不强制退出
@@ -1145,15 +1219,35 @@ define(function(require, exports, module) {
 			var myurl = window.location.toString();
 			var threadSignal = null;
 			var execResult = (new RegExp("threadSignal=([\\w%\\.]+)")).exec(myurl);
+			//处理threadSignal
 			if (execResult){
 				threadSignal = execResult[1];
 			}
+			if (threadSignal == null){
+				threadSignal = _obj.use().load("_threadSignal",true);
+			}
+			
+			var mokeSignal = null;
+			execResult = (new RegExp("mokeSignal=([\\w%\\.]+)")).exec(myurl);
+			//处理mokeSignal
+			if (execResult){
+				mokeSignal = execResult[1];
+			}
+			if (mokeSignal == null){
+				mokeSignal = _obj.use().load("_mokeSignal",true);
+			}
+			
+			
 			var postUrl = _doserverUrl;
 			if(__paramUrl){
 				postUrl = __paramUrl;
 			}
 			if (threadSignal){
-				postUrl = _doserverUrl + "?threadSignal="+threadSignal;
+				postUrl = postUrl + "?threadSignal="+threadSignal;
+			}
+			
+			if (mokeSignal){
+				postUrl = postUrl + "?mokeSignal="+mokeSignal;
 			}
 
 			$.ajaxSetup({
@@ -1373,6 +1467,74 @@ define(function(require, exports, module) {
 		callback(result);
 	}
 	
+	
+	
+	/**
+	*2016-09-03 罗光瑜 提供log方法方法
+	*@function
+	*@name createApp
+	*@param {String} app 提示字符串
+	*@param {String} method 对应的回调函数
+	*@param {String} postData 这个调用的输入对象
+	*@param {String} returnData 返回的参数
+	*@memberOf FW
+	*@description 当设置了日志标识后，会进行参数提交录制对应操作的日志信息提交到后台，达到录制条件的日志标识，可以从url中获取，也可以从localtion中获取
+	*/
+	_obj.pgLog = function(app,method,postData,returnData){
+		//判断是否有有标识
+		var threadSignal = _obj.use().getParameter("threadSignal");
+		if (!threadSignal){
+			threadSignal = _obj.use().load("_threadSignal",true);
+		}
+		if (!threadSignal){
+			return;
+		}
+		//如果第一个参数是字符串，就直接记录本地日志
+		if (/string/i.test(typeof(app))){
+			var oldLog = _obj.use().load("_pgLog",true);
+			if (oldLog == null){
+				oldLog = [];
+			}
+			oldLog.push({
+				log:app,
+				time:(new Date()).toString()
+			});
+			_obj.use().save("_pgLog",oldLog,true);
+			return;
+		}
+		//整理参数
+		//获取url文件
+		var myurl = window.location.toString();
+		var url = myurl.replace(/^http[s]?:\/\/[^\/]+/i, "");
+		//去掉尾部?部分
+		url = url.replace(/[#\?][\s\S]*$/i, "");
+		//去掉应用名部分
+		if (/undefined/.test(typeof(Cfg))){
+			alert("Cfg.baseUrl必须被定义，在/config/config.jsp中定义按照js方式加载");
+			return;
+		}
+		if (!/undefined/.test(typeof(Cfg)) && url.indexOf(Cfg.baseUrl) == 0) {
+			url = url.substr(Cfg.baseUrl.length);
+		}else{
+			url = url.replace(/^.*(\/page\/)/i,function(a,b,c,d,e){
+				return b;
+			})
+		}
+		//变成可用符号
+		url=("/"+url).replace(/[\\\/]+/ig,"_");
+		//获取名字
+		var name = app.gadgetName;
+		
+		//发送请求
+		FW.doServer("logMokeData","moke",{
+			url:url,
+			gadgetName:name,
+			funName:method,
+			input:postData,
+			output:returnData
+		},function(){},app,Cfg.baseUrl+"/breeze/framework/jsp/BreezeFW.jsp");
+	}
+	
 	/**
 	*2015-02-29 罗光瑜 提供一个获取函数调用者的方法
 	*@function
@@ -1383,7 +1545,10 @@ define(function(require, exports, module) {
 	*@description 提供一个获取函数调用者的方法
 	*/
 	_obj.getCaller = function(level,resultType){
-		var levelLen = level || 1;
+		var levelLen =  1;
+		if (level != null){
+			levelLen = level;
+		}
 		var stack = [];
 	    var fun = _obj.getCaller;
 	    fun = fun.caller;
@@ -1398,6 +1563,8 @@ define(function(require, exports, module) {
 	    }
 	    return stack;
 	}
+	
+	
 
 	//私有函数
 	//2014-01-03 罗光瑜修改，支持初始化的时候，初始化一个页面的page对象

@@ -3,8 +3,8 @@
 	<PatchDir>dest/breezeCMS_patch.zip</PatchDir>
 	<DocDir>dest/breezeCMS_doc.zip</DocDir>
 	<Type>BreezeCMS</Type>
-	<Version>3.24</Version>
+	<Version>3.25</Version>
 	<VersionDesc>
-		有左侧菜单树的时候，编辑列表，然后直接用左边菜单树跳转会查询不到该有的内容
+		CMS list类型添加失败问题
 	</VersionDesc>
 </description>

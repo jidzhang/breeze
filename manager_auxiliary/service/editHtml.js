@@ -460,7 +460,7 @@ define(function(require, exports, module) {
                         additionalParameters: {
                             children: {}
                         }
-                    }
+                    };
                     var c = tree_data["js"].additionalParameters.children;
                     for (var n in orgData.js) {
                         c["js." + n] = {
@@ -632,11 +632,26 @@ define(function(require, exports, module) {
                 //初始化文本编辑器
                 var code_panel = this.API.find("#infoForm")[0];
                 code_panel.value = showText;
-
+				
+				var mixedMode = {
+					name: "htmlmixed",
+					scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+						mode: null},
+						{matches: /(text|application)\/(x-)?vb(a|script)/i,
+							mode: "vbscript"}]
+				};
                 var editor = CodeMirror.fromTextArea(code_panel, {
-                    lineNumbers: true,
-                    matchBrackets: true,
-                    mode: "text/html"
+					lineNumbers: true,
+					matchBrackets: true,
+					continueComments: "Enter",
+					mode: mixedMode,
+					gutters: ["CodeMirror-lint-markers"],
+					extraKeys: {
+						"Ctrl-Q": "toggleComment",
+						"Ctrl-Space": "autocomplete"
+					},
+					lint: true,
+					keyMap: "sublime"
                 });
 
                 code_panel.getValue = function() {

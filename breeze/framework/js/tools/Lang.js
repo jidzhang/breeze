@@ -625,6 +625,8 @@ define(function(require, exports, module) {
 	}
 	/**
 	*深度拷贝，这个方法用于深度的拷贝一个对象
+	* @memberOf lang
+	*@name deepCopy
 	*@param __srcObj 原始的对象
 	*@param __destObj 拷贝到的目标对象
 	*@param __filterFun 只是一个拷贝过程中回调的过滤函数，回调的输入参数有如下：
@@ -686,6 +688,138 @@ define(function(require, exports, module) {
 	}
 	
 	/**
+	*根据字符串对象路径设置对象值，如果设置的过程中对象成员不存在就会被创建<br/>
+	*例如传入的是var data = {};<br/>
+	* setObjStrData(data,"a.b[0][1].c[][].d","ok");就会把ok设置到data.a.b[0][1].c[0][0].d下面
+	* @memberOf lang
+	*@name setObjStrData
+	*@param data 要设置的对象的根
+	*@param str 拷贝到的目标对象
+	*@param value 实际要设置的值
+	*/
+	_result.setObjStrData = function(data,str,value){
+	    //先声明一个设置值的函数，用于判断被设置对象原来的值是否存在，如果存在则变成数组
+		var setValue = function(obj,key,value){
+			if (obj[key] == null){
+				obj[key] = value;
+				return;
+			}
+			if (obj[key] instanceof Array){
+				obj[key].push(value);
+				return;
+			}
+			
+			var tmp = obj[key];
+			obj[key] = [];
+			obj[key].push(tmp);
+			obj[key].push(value);
+		}
+		
+		
+		
+		
+	    //用正则分解第一项
+		var execResult = /(\w+)([\.\[\d\]]*)([\s\S]*)/.exec(str);
+		if (execResult == null){
+			return;
+		}
+		var key = execResult[1];
+		var after = execResult[2];
+		var next = execResult[3];
+		
+		//如果没有后缀，那么next肯定也不存在，赋值后直接返回
+		if (after == null || after==""){
+			setValue(data,key,value);
+			return;
+		}
+		
+		//如果仅仅是.表示这个是对象，还有后续部分的
+		if (after == "."){
+			//应该有后续的没有后续一定是出错了
+		    if (next == null){
+				return;
+			}
+		    if (data[key] == null){
+			   data[key] = {};
+			}
+			_result.setObjStrData(data[key],next,value);
+			return;
+		}
+		
+		//下面处理最复杂的[]情况
+		var curStr = after;
+		if (!data[key]){
+			data[key] = [];
+		}
+		var curData = data[key];
+		while(true){
+		    execResult = /\[(\d*)\](\.?)([\s\S]*)/i.exec(curStr);
+			//没有匹配到说明出错了
+			if (execResult == null){
+			   return;
+			}
+
+			var idx = execResult[1];
+			var isObj = (execResult[2] != null && execResult[2]!="");
+			var isArr = (execResult[3] != null && execResult[3]!="");
+            //数组无下标，补充下标
+			if (idx == null || idx == ""){
+				idx = curData.length;
+			}
+			//本身无值的情况
+			if (!curData[idx]){
+				//是对象，递归去
+				if (isObj){
+					curData[idx]={};
+					_result.setObjStrData(curData[idx],next,value);
+					return;
+				}
+				//如果是数组，继续循环
+				if (isArr){
+					curData[idx] = [];
+					curData = curData[idx];
+					curStr = execResult[3];
+					continue;
+				}
+				//不是数组，也不是对象，那么当前就是要赋值了a[2]
+				setValue(curData,idx,value);
+				return;
+			}
+			//本身有值的情况
+			else{
+				//是对象情况,递归去
+				if (isObj){
+					_result.setObjStrData(curData[idx],next,value);
+					return;
+				}
+				//如果是数组，继续循环
+				if (isArr){
+					curData = curData[idx];
+					curStr = execResult[3];
+					continue;
+				}
+				//直接赋值
+				setValue(curData,idx,value);
+				return;
+			}
+		}
+    };
+	/**
+	* @function
+	* @memberOf lang
+	* @name getObjStrData
+	* @desctiption 根据传入的字符串路径，从对象中取值
+	* @param formid data 被取值的对象
+	* @param str 被取值的路径
+	*/
+	_result.getObjStrData = function(data,str){
+		try{
+			var value = eval("(data."+str+")");
+			return value;
+		}catch(e){}
+		return null;
+	}
+	/**
 	* @function
 	* @memberOf lang
 	* @name getFormValue
@@ -709,109 +843,14 @@ define(function(require, exports, module) {
 				return;
 			}
 			var execResult = /(\w+)\[(\d*)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-				if (!result[key1]){
-					result[key1] = [];
-				}
-				var one = (idx!="" && idx!=null) && result[key1][Number(idx)] || {};
-
-				if (key2){
-					one[key2] = this.value;
-				}
-				else{
-					one= this.value;
-				}
-
-				if (idx == null || idx==""){
-					result[key1].push(one);
-				}else{
-					result[key1][Number(idx)] = one;
-				}
-
-				return;
-			}
-			var names = this.name.split(".");
-			var baseObj = result;
-			for (var i =0;i<names.length;i++){
-				if (i == names.length-1){
-					if (baseObj[names[i]]){
-						if (baseObj[names[i]].length>=1 && baseObj[names[i]].push){
-							baseObj[names[i]].push(this.value);
-						}
-						else{
-							var tmp = baseObj[names[i]] ;
-							baseObj[names[i]] = [];
-							baseObj[names[i]].push(tmp);
-							baseObj[names[i]].push(this.value);
-						}
-					}else{
-						baseObj[names[i]] = this.value;
-					}
-					
-					break;
-				}
-				if (!baseObj[names[i]]){
-					baseObj[names[i]] = {};
-				}
-				baseObj = baseObj[names[i]];
-			}
+			_result.setObjStrData(result,this.name,$(this).val());
 		});
 		formObj.find("select").each(function(){
 			if (this.name == ""){
 				return;
 			}
 			var execResult = /(\w+)\[(\d*)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-				if (!result[key1]){
-					result[key1] = [];
-				}
-				var one = (idx!="" && idx!=null) && result[key1][Number(idx)] || {};
-
-				if (key2){
-					one[key2] = this.value;
-				}
-				else{
-					one= this.value;
-				}
-
-				if (idx == null || idx==""){
-					result[key1].push(one);
-				}else{
-					result[key1][Number(idx)] = one;
-				}
-
-				return;
-			}
-			var names = this.name.split(".");
-			var baseObj = result;
-			for (var i =0;i<names.length;i++){
-				if (i == names.length-1){
-					if (baseObj[names[i]]){
-						if (baseObj[names[i]].length>=1 && baseObj[names[i]].push){
-							baseObj[names[i]].push(this.value);
-						}
-						else{
-							var tmp = baseObj[names[i]] ;
-							baseObj[names[i]] = [];
-							baseObj[names[i]].push(tmp);
-							baseObj[names[i]].push(this.value);
-						}
-					}else{
-						baseObj[names[i]] = this.value;
-					}
-					break;
-				}
-				if (!baseObj[names[i]]){
-					baseObj[names[i]] = {};
-				}
-				baseObj = baseObj[names[i]];
-			}
+			_result.setObjStrData(result,this.name,$(this).val());
 		});
 		
 		formObj.find("textarea").each(function(){
@@ -819,54 +858,7 @@ define(function(require, exports, module) {
 				return;
 			}
 			var execResult = /(\w+)\[(\d*)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-				if (!result[key1]){
-					result[key1] = [];
-				}
-				var one = (idx!="" && idx!=null) && result[key1][Number(idx)] || {};
-
-				if (key2){
-					one[key2] = this.value;
-				}
-				else{
-					one= this.value;
-				}
-
-				if (idx == null || idx==""){
-					result[key1].push(one);
-				}else{
-					result[key1][Number(idx)] = one;
-				}
-
-				return;
-			}
-			var names = this.name.split(".");
-			var baseObj = result;
-			for (var i =0;i<names.length;i++){
-				if (i == names.length-1){
-					if (baseObj[names[i]]){
-						if (baseObj[names[i]].length>=1 && baseObj[names[i]].push){
-							baseObj[names[i]].push(this.value);
-						}
-						else{
-							var tmp = baseObj[names[i]] ;
-							baseObj[names[i]] = [];
-							baseObj[names[i]].push(tmp);
-							baseObj[names[i]].push(this.value);
-						}
-					}else{
-						baseObj[names[i]] = this.value;
-					}
-					break;
-				}
-				if (!baseObj[names[i]]){
-					baseObj[names[i]] = {};
-				}
-				baseObj = baseObj[names[i]];
-			}
+			_result.setObjStrData(result,this.name,$(this).val());
 			
 		});
 		
@@ -893,45 +885,28 @@ define(function(require, exports, module) {
 			if (this.name == ""){
 				return;
 			}
-			var execResult = /(\w+)\[(\d+)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-
-
-				if (key2){
-					this.value = eval("(data['"+key1+"']["+idx+"]['"+key2+"']");
+			
+			var setValue = function (dom,value){
+				if (dom.type == "radio"){
+					if ($(dom).val() == value){
+						$(dom).attr("checked",true);
+					}else{
+						$(dom).attr("checked",false);
+					}
+					return;
 				}
-				else{
-					this.value = eval("(data['"+key1+"']["+idx+"]");
-				}
-				
-				return;
+				$(dom).val(value);
 			}
-			this.value = eval("(data['"+this.name+"'])");
+			var value = _result.getObjStrData(data,this.name);
+			setValue(this,value);
 		});
 		formObj.find("select").each(function(){
 			if (this.name == ""){
 				return;
 			}
-			var execResult = /(\w+)\[(\d+)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-
-
-				if (key2){
-					this.value = eval("(data['"+key1+"']["+idx+"]['"+key2+"']");
-				}
-				else{
-					this.value = eval("(data['"+key1+"']["+idx+"]");
-				}
-			}else{
-				this.value = eval("(data['"+this.name+"'])");
-			}
-			var value = this.value;
+			var value = _result.getObjStrData(data,this.name);
+			this.value = value;
+			
 			
 			$(this).find("option").each(
 				function(){
@@ -946,23 +921,8 @@ define(function(require, exports, module) {
 			if (this.name == ""){
 				return;
 			}
-			var execResult = /(\w+)\[(\d+)\]\.?(\w*)/.exec(this.name);
-			if (execResult != null){
-				var key1 = execResult[1];
-				var idx = execResult[2];
-				var key2 = execResult[3];
-
-
-				if (key2){
-					this.value = eval("(data['"+key1+"']["+idx+"]['"+key2+"']");
-				}
-				else{
-					this.value = eval("(data['"+key1+"']["+idx+"]");
-				}
-				
-				return;
-			}
-			this.value = eval("(data['"+this.name+"'])");
+			var value = _result.getObjStrData(data,this.name);
+			$(this).val(value);
 		});
 	}
 

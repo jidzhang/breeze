@@ -4,7 +4,8 @@
 * @version 1.01 FrankCheng 基本列表控制器初始版本
 1.02 罗光瑜 删除了aftershow函数，使用默认的基类实现
 1.03 罗光瑜 改造成移动端的默认列表
-* @description  默认列表控制器                                                                                               
+1.04 罗光瑜 只保留listdecorate，其他都删除
+* @description  默认列表控制器                                                                                                
 */
 define(function(require, exports, module) {
     var FW = require("breeze/framework/js/BreezeFW");
@@ -13,12 +14,10 @@ define(function(require, exports, module) {
     require("./CMSMgrDefaultMaskControl");
     require("./CMSMgrModSingleControl");
     require("./debugpage_Control");
-    require("../decorates/CMSMgrDefaultHeaderDecorate");
     require("../decorates/CMSMgrDefaultListFilterDecorate");
     require("../decorates/CMSMgrDefaultListPaginationDecorate");
     require("../decorates/CMSMgrDefaultListSearchDecorate");
     require("../decorates/CMSMgrDefaultListViewDecorate");
-    require("../decorates/CMSMgrDefaultNodeDecorate");
     require("../decorates/CMSMgrDefaultTagDecorate");
     FW.register({
         "name": "mlist_Control",
@@ -269,29 +268,9 @@ define(function(require, exports, module) {
             */
             "getDecorates": function() {
                 var result = [{
-                    gadgetName: "CMSMgrDefaultHeaderDecorate",
-                    view: "CMSMgrDefaultHeaderResourceView",
-                    instance: "CMSMgrDefaultHeaderDecorate"
-                },
-                {
-                    gadgetName: "CMSMgrDefaultNodeDecorate",
-                    view: "CMSMgrDefaultNodeResourceView",
-                    instance: "CMSMgrDefaultNodeDecorate",
-                    children: [{
-                        gadgetName: "CMSMgrDefaultTagDecorate",
-                        view: "CMSMgrDefaultTagResourceView",
-                        instance: "CMSMgrDefaultTagDecorate",
-                        children: [{
-                            gadgetName: "CMSMgrDefaultListFilterDecorate",
-                            view: "CMSMgrDefaultListFilterResourceView",
-                            instance: "CMSMgrDefaultListFilterDecorate",
-                            children: [{
-                                gadgetName: "CMSMgrDefaultListViewDecorate",
-                                view: "CMSMgrDefaultListViewResourceView",
-                                instance: "CMSMgrDefaultListViewDecorate"
-                            }]
-                        }]
-                    }]
+                    gadgetName: "CMSMgrDefaultListViewDecorate",
+                    view: "CMSMgrDefaultListViewResourceView",
+                    instance: "CMSMgrDefaultListViewDecorate"
                 },
                 {
                     gadgetName: "CMSMgrDefaultListPaginationDecorate",

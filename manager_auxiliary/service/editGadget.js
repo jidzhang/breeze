@@ -706,9 +706,18 @@ define(function(require, exports, module) {
 					lineNumbers: true,
 					matchBrackets: true,
 					mode: "text/javascript",
+					gutters: ["CodeMirror-lint-markers"],
 					smartIndent:true,
 					height:"800px",
-					autoMatchParens:true
+					autoMatchParens:true,
+					continueComments: "Enter",
+					extraKeys: {
+						"Ctrl-Q": "toggleComment",
+                        "Ctrl-Space": "autocomplete"
+                    },
+					lint:true,
+					keyMap:"sublime"
+					
 				});
 				//绑定侦听事件，时期实现冒泡
 				this.API.private("cEditorTips",editor);
@@ -1410,7 +1419,6 @@ define(function(require, exports, module) {
 					//changes.update(changes.from, changes.to, ['.b'], changes.origin);
 				});
 				//键盘提示
-				
 				editor.on("keydown", function (Editor, Eevent) {					
 					if (83 == Eevent.keyCode){
 						if (Eevent.ctrlKey || Eevent.altKey){

@@ -584,7 +584,29 @@ request.setAttribute("_","$");
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/xq-light.css">
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/yeti.css">
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/zenburn.css">
+
+<%--<link rel="stylesheet" href="./pageplugin/codemirror/addon/hint/show-hint.css">--%>
+
 <script src="${B}breeze/lib/js/codemirror/javascript.js?v=1.3"></script>
+<script src="./pageplugin/codemirror/mode/javascript/javascript.js"></script>
+<%--<script src="./pageplugin/codemirror/addon/hint/show-hint.js"></script>--%>
+<%--<script src="./pageplugin/codemirror/addon/hint/javascript-hint.js"></script>--%>
+<script src="./pageplugin/codemirror/addon/edit/matchbrackets.js"></script>
+<script src="./pageplugin/codemirror/addon/comment/continuecomment.js"></script>
+<script src="./pageplugin/codemirror/addon/comment/comment.js"></script>
+
+				<link rel="stylesheet" href="./pageplugin/codemirror/addon/lint/lint.css">
+				<script src="./pageplugin/codemirror/addon/lint/lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/css-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/html-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/javascript-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/json-lint.js"></script>
+
+				<script src="./pageplugin/codemirror/keymap/vim.js"></script>
+				<script src="./pageplugin/codemirror/keymap/emacs.js"></script>
+				<script src="./pageplugin/codemirror/keymap/sublime.js"></script>
+				
+
 
 <script>
 	seajs.config({base:"${B}"});

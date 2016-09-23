@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="../../lib/codemirror.css">
 <script src="../../lib/codemirror.js"></script>
 <script src="../../addon/selection/selection-pointer.js"></script>
+<script src="../../addon/edit/matchbrackets.js"></script>
+<script src="../../addon/comment/continuecomment.js"></script>
+<script src="../../addon/comment/comment.js"></script>
 <script src="../xml/xml.js"></script>
 <script src="../javascript/javascript.js"></script>
 <script src="../css/css.js"></script>
@@ -65,7 +68,8 @@
       };
       var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         mode: mixedMode,
-        selectionPointer: true
+        selectionPointer: true,
+        extraKeys: {"Ctrl-Q": "toggleComment"}
       });
     </script>
 

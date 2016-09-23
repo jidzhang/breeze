@@ -2,6 +2,7 @@
 * @namespace
 * @name List_Decorate 
 * @version 0.01 罗光瑜 修改：将视图部分的列表条件由原来的Hidden_改成用isList表示
+0.02 罗光瑜 列表模型，添加时，正则表达式写死是当前的模型里面的前缀，导致这个只有模型编辑的列表能用，其他用不了
 * @description  这个是独立的表单组件，这个组件是一个列表，列表的metadata结构如下：
 *{
 *   fieldName:{
@@ -12,7 +13,7 @@
 *   }
 *}
 *至于类型，如果是非表单内容的，就采用Hidden_[原来字段类型]的方式表示，例如：
-*Hidden_Text           
+*Hidden_Text            
 */
 define(function(require, exports, module) {
     var FW = require("breeze/framework/js/BreezeFW");
@@ -127,7 +128,8 @@ define(function(require, exports, module) {
                     //找到最后一行name[idx]
                     var Col = $(dom).parent().prev().find(">tbody>tr");
                     var lastCol = Col.eq(Col.length - 2);
-                    var arr = lastCol.html().match(/(data-list-value=["']?)(data.*?)(["']?[\s>])/)[2].split("[");
+                    var exp = new RegExp("(data-list-value=[\"']?)(" + this.MY.fieldId + ".*?)([\"']?[\s>])", "i");
+                    var arr = lastCol.html().match(exp)[2].split("[");
                     var idx = parseInt(arr[arr.length - 1].split("]")[0]) + 1;
                 }
                 //克隆空白行
@@ -272,6 +274,6 @@ define(function(require, exports, module) {
         }
 
     },
-    module);
+    module, '0.02');
     return FW;
 });

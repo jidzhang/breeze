@@ -30,6 +30,8 @@
 	  <link rel="stylesheet" href="./assets/css/ace-ie.min.css" />
 	<![endif]-->
             <!--@config@{"manager_auxiliary":"/manager_auxiliary","../":"/"}-->
+
+
 			</head>
 
 			<body>
@@ -236,9 +238,84 @@
 				<script src="./assets/js/ace-elements.min.js"></script>
 				<script src="./assets/js/ace.min.js"></script>
 				<!--codemirror-->
-				<script src="${B}breeze/lib/js/codemirror/codemirror.js?v=1.3"></script>
 				<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/codemirror.css">
-				<script src="${B}breeze/lib/js/codemirror/javascript.js?v=1.3"></script>
+				<link rel="stylesheet" href="./pageplugin/codemirror/addon/hint/show-hint.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/3024-day.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/3024-night.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/ambiance.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/base16-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/base16-light.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/blackboard.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/cobalt.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/colorforth.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/dracula.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/eclipse.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/elegant.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/erlang-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/icecoder.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/lesser-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/liquibyte.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/material.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/mbo.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/mdn-like.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/midnight.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/monokai.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/neat.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/neo.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/night.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/paraiso-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/paraiso-light.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/pastel-on-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/rubyblue.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/seti.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/solarized.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/the-matrix.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/tomorrow-night-bright.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/tomorrow-night-eighties.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/ttcn.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/twilight.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/vibrant-ink.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/xq-dark.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/xq-light.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/yeti.css">
+<link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/zenburn.css">
+
+
+
+
+
+				<script src="${B}breeze/lib/js/codemirror/codemirror.js"></script>
+				<script src="${B}breeze/lib/js/codemirror/javascript.js"></script>
+				<script src="./pageplugin/codemirror/addon/hint/show-hint.js"></script>
+				<script src="./pageplugin/codemirror/addon/hint/xml-hint.js"></script>
+				<script src="./pageplugin/codemirror/addon/hint/html-hint.js"></script>
+				<script src="./pageplugin/codemirror/mode/xml/xml.js"></script>
+				<script src="./pageplugin/codemirror/mode/javascript/javascript.js"></script>
+				<script src="./pageplugin/codemirror/mode/css/css.js"></script>
+				<script src="./pageplugin/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+				<script src="./pageplugin/codemirror/addon/edit/matchbrackets.js"></script>
+				<script src="./pageplugin/codemirror/addon/comment/continuecomment.js"></script>
+				<script src="./pageplugin/codemirror/addon/comment/comment.js"></script>
+				<script src="./pageplugin/codemirror/addon/selection/selection-pointer.js"></script>
+				
+				<link rel="stylesheet" href="./pageplugin/codemirror/addon/lint/lint.css">
+				<script src="./pageplugin/codemirror/addon/lint/lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/css-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/html-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/javascript-lint.js"></script>
+				<script src="./pageplugin/codemirror/addon/lint/json-lint.js"></script>
+				<script src="./pageplugin/codemirror/keymap/vim.js"></script>
+				<script src="./pageplugin/codemirror/keymap/emacs.js"></script>
+				<script src="./pageplugin/codemirror/keymap/sublime.js"></script>
+
+<style>
+      .cm-tab {
+		 text-decoration: none;
+         background: none;
+         background-position: right;
+         background-repeat: no-repeat;
+      }
+</style>
                 <script src="${B}breeze/swfupload/swfupload.js"></script>
                 <script src="${B}breeze/swfupload/handlers.js"></script>
 				<script src="${B}config/config.jsp"></script>

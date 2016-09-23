@@ -3,8 +3,8 @@
 	<PatchDir>dest/breezeJs_patch.zip</PatchDir>
 	<DocDir>dest/breezeJs_doc.zip</DocDir>
 	<Type>BreezeJs</Type>
-	<Version>1.50</Version>
+	<Version>1.53</Version>
 	<VersionDesc>
-	  修改Breeze中的蒙板层实现，使其可以有默认的高度，并且去掉waiting的鼠标指针模式
+	  修复lang去form表单的功能，可以支持无限极表达。另外show方法支持第四个参数，即jquery的显示特效
 	</versionDesc>
 <description>
