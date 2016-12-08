@@ -707,6 +707,7 @@ define(function(require, exports, module) {
 					matchBrackets: true,
 					mode: "text/javascript",
 					gutters: ["CodeMirror-lint-markers"],
+					lint:true,
 					smartIndent:true,
 					height:"800px",
 					autoMatchParens:true,
@@ -715,7 +716,6 @@ define(function(require, exports, module) {
 						"Ctrl-Q": "toggleComment",
                         "Ctrl-Space": "autocomplete"
                     },
-					lint:true,
 					keyMap:"sublime"
 					
 				});

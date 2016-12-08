@@ -542,6 +542,7 @@ request.setAttribute("_","$");
 <!--ace scripts-->
 <script src="./assets/js/ace-elements.min.js"></script>
 <script src="./assets/js/ace.min.js"></script>
+
 <!--codemirror-->
 <script src="${B}breeze/lib/js/codemirror/codemirror.js?v=1.3"></script>
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/codemirror.css">
@@ -585,9 +586,10 @@ request.setAttribute("_","$");
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/yeti.css">
 <link rel="stylesheet" href="${B}breeze/lib/js/codemirror/theme/zenburn.css">
 
+<link rel="stylesheet" href="./pageplugin/codemirror/addon/lint/lint.css">
 <%--<link rel="stylesheet" href="./pageplugin/codemirror/addon/hint/show-hint.css">--%>
 
-<script src="${B}breeze/lib/js/codemirror/javascript.js?v=1.3"></script>
+<%--<script src="${B}breeze/lib/js/codemirror/javascript.js?v=1.3"></script>--%>
 <script src="./pageplugin/codemirror/mode/javascript/javascript.js"></script>
 <%--<script src="./pageplugin/codemirror/addon/hint/show-hint.js"></script>--%>
 <%--<script src="./pageplugin/codemirror/addon/hint/javascript-hint.js"></script>--%>
@@ -595,18 +597,16 @@ request.setAttribute("_","$");
 <script src="./pageplugin/codemirror/addon/comment/continuecomment.js"></script>
 <script src="./pageplugin/codemirror/addon/comment/comment.js"></script>
 
-				<link rel="stylesheet" href="./pageplugin/codemirror/addon/lint/lint.css">
-				<script src="./pageplugin/codemirror/addon/lint/lint.js"></script>
-				<script src="./pageplugin/codemirror/addon/lint/css-lint.js"></script>
-				<script src="./pageplugin/codemirror/addon/lint/html-lint.js"></script>
-				<script src="./pageplugin/codemirror/addon/lint/javascript-lint.js"></script>
-				<script src="./pageplugin/codemirror/addon/lint/json-lint.js"></script>
-
-				<script src="./pageplugin/codemirror/keymap/vim.js"></script>
-				<script src="./pageplugin/codemirror/keymap/emacs.js"></script>
-				<script src="./pageplugin/codemirror/keymap/sublime.js"></script>
-				
-
+<!--codemirror lint-->
+<script src="./pageplugin/codemirror/addon/lint/lint.js"></script>
+<script src="./pageplugin/codemirror/addon/lint/css-lint.js"></script>
+<script src="./pageplugin/codemirror/addon/lint/html-lint.js"></script>
+<script src="./pageplugin/codemirror/addon/lint/javascript-lint.js"></script>
+<script src="./pageplugin/codemirror/addon/lint/json-lint.js"></script>
+<!--codemirror keymap-->
+<script src="./pageplugin/codemirror/keymap/vim.js"></script>
+<script src="./pageplugin/codemirror/keymap/emacs.js"></script>
+<script src="./pageplugin/codemirror/keymap/sublime.js"></script>
 
 <script>
 	seajs.config({base:"${B}"});
