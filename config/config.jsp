@@ -1,18 +1,17 @@
 ﻿<%@ page language="java" contentType="application/x-javascript; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.breeze.support.cfg.Cfg"%>
 <%
-   
-   String B = this.getServletContext().getContextPath();
+	String B = this.getServletContext().getContextPath();
 
 	String configUrlPrefix = Cfg.getCfg().getString("siteprefix");
 	if (configUrlPrefix !=null && !configUrlPrefix.equals("--")){
 		B = configUrlPrefix;
 	}
 
-   if ("/".equals(B)){
-	   B = "";
+	if ("/".equals(B)){
+		B = "";
 	}
-   String cmsBaseUrl = (String)session.getAttribute("CMSMgr");   
+	String cmsBaseUrl = (String)session.getAttribute("CMSMgr");
 %>
 var Cfg = {
 	baseUrl: '<%=B%>',
